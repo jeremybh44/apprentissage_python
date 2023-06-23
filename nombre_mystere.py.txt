@@ -1,0 +1,49 @@
+# JEU : le nombre mystère
+
+import random
+
+RANGE_MIN = 1
+RANGE_MAX_BASE_PAR_NIVEAU = (75, 100, 150)
+MAX_TENTATIVE_PAR_NIVEAU = (7, 6, 5)
+
+print("======== Découverte du nombre mystère ========")
+niveau = 0
+while (niveau < 1) or (niveau > 3):
+    choix_niveau = input(f"""Quel niveau pour cette partie (1 à 3 inclus) ?
+            - niveau 1 -> range: [{RANGE_MIN},{RANGE_MAX_BASE_PAR_NIVEAU[0]}] ; max tenta: {MAX_TENTATIVE_PAR_NIVEAU[0]}
+            - niveau 2 -> range: [{RANGE_MIN},{RANGE_MAX_BASE_PAR_NIVEAU[1]}] ; max tenta: {MAX_TENTATIVE_PAR_NIVEAU[1]}
+            - niveau 3 -> range: [{RANGE_MIN},{RANGE_MAX_BASE_PAR_NIVEAU[2]}] ; max tenta: {MAX_TENTATIVE_PAR_NIVEAU[2]} """)
+    if choix_niveau.isdigit() :
+        if 1 <= int(choix_niveau) <= 3:
+            niveau = int(choix_niveau)
+        else:
+            print("Rentrez un niveau compris entre 1 et 3 inclus")
+    else:
+        print("Rentrez un niveau compris entre 1 et 3 inclus")
+
+index_niveau = niveau - 1
+NOMBRE_MYSTERE = random.randrange(RANGE_MIN, RANGE_MAX_BASE_PAR_NIVEAU[index_niveau] + 1)
+
+trouve = False
+nombre_tentatives = 0
+
+while (not trouve) and (nombre_tentatives < MAX_TENTATIVE_PAR_NIVEAU[index_niveau]):
+    
+    nombre = input(f"Proposez un nombre entre {RANGE_MIN} et {RANGE_MAX_BASE_PAR_NIVEAU[index_niveau]} : ")
+    if nombre.isdigit() and RANGE_MIN <= int(nombre) <= RANGE_MAX_BASE_PAR_NIVEAU[index_niveau]:
+        nombre_tentatives += 1
+        nombre = int(nombre)
+        
+        # indiquer si c'est plus ou moins ou si l'utilisateur à trouvé le nombre mystère
+        if nombre > NOMBRE_MYSTERE:
+            print("C'est moins !")
+        elif nombre < NOMBRE_MYSTERE:
+            print("C'est plus !")
+        else:
+            trouve = True
+            print (f"Tu as trouvé le nombre mystère en {nombre_tentatives} tentatives!!!")
+    else:
+        print(f"Rentrez un nombre compris entre {RANGE_MIN} et {RANGE_MAX_BASE_PAR_NIVEAU[index_niveau]}")
+        
+if not trouve:
+    print(f"Trop tard, vous aviez seulement {MAX_TENTATIVE_PAR_NIVEAU[index_niveau]} tentatives pour trouver le nombre mystère qui était {NOMBRE_MYSTERE}")

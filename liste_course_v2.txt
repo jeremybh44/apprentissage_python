@@ -1,0 +1,19 @@
+import os 
+import json
+
+NOM_FICHIER_SAUVEGARDE = "sauvegarde_liste_course.json"
+
+def sauvegarde_liste(liste):
+    with open(NOM_FICHIER_SAUVEGARDE, 'w') as fichier:
+        json.dump(liste, fichier)
+
+def recuperation_liste(liste):
+    with open(NOM_FICHIER_SAUVEGARDE, "r") as fichier:
+        liste = json.load(fichier)
+
+LISTE = ["un", "deux", "trois"]
+
+sauvegarde_liste(LISTE)
+LISTE2 = []
+recuperation_liste(LISTE2)
+print(LISTE2)

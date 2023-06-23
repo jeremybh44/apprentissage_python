@@ -1,0 +1,109 @@
+# JEU DE ROLE
+
+import random
+
+#Définition des constantes
+INDEX_NOM = 0
+INDEX_PDV = 1
+INDEX_RANGE_ATTAQUE = 2
+INDEX_NB_POTION = 3
+INDEX_RANGE_ATTAQUE_MIN = 0
+INDEX_RANGE_ATTAQUE_MAX = 1
+INDEX_RANGE_POTION_MIN = 0
+INDEX_RANGE_POTION_MAX = 1
+CHOIX_ATTAQUER = "1"
+CHOIX_POTION = "2"
+PDV_MAX = 50
+POTION = (15, 50)
+
+#Déclaration des opposants
+joueur = []
+monstre = []
+
+#Déclaration de la variable permettant de savoir si le monstre peut attaquer ou non
+monstre_peut_attaquer = True
+
+#Fonction permettant de générer des avatar
+def creation_avatar(avatar, nom, pdv, range_attaque, nb_potion):
+    avatar.append(nom) 
+    avatar.append(pdv) 
+    avatar.append(range_attaque)
+    avatar.append(nb_potion)
+
+#Fonction permettant de lancer une attaque
+def attaquer(attaquant, defenseur):
+    #Génération de la valeur d'attaque aléatoire
+    valeur_attaque = random.randint(attaquant[INDEX_RANGE_ATTAQUE][INDEX_RANGE_ATTAQUE_MIN], attaquant[INDEX_RANGE_ATTAQUE][INDEX_RANGE_ATTAQUE_MAX])
+    
+    print(f"{attaquant[INDEX_NOM]} lance une attaque a {defenseur[INDEX_NOM]} d'une valeur de {valeur_attaque}")
+    #Comportement selon si l'attaque met KO l'adversaire ou non
+    if defenseur[INDEX_PDV] >= valeur_attaque:
+        defenseur[INDEX_PDV] -= valeur_attaque
+        print(f"Vie restante de {defenseur[INDEX_NOM]} : {defenseur[INDEX_PDV]}")
+    else:
+        defenseur[INDEX_PDV] = 0
+        print(f"{defenseur[INDEX_NOM]} KO")
+
+#Fonction permettant d'utiliser une potion
+def prendre_potion(avatar):
+    #Indication que la variable est une variable global pour enregistrer la nouvelle valeur une fois sortie de la fonction
+    global monstre_peut_attaquer
+    
+    #Cas où l'avatar possède encore des potions
+    if avatar[INDEX_NB_POTION] > 0:
+        #Tentative d'utilisation de potion qui réussi, donc le monstre pourra attaquer avant de redemander une nouvelle action de l'utilisateur
+        monstre_peut_attaquer = True
+        avatar[INDEX_NB_POTION] -= 1
+        #Génération de la valeur de gain de vie aléatoire
+        gain_pdv = random.randint(POTION[INDEX_RANGE_POTION_MIN], POTION[INDEX_RANGE_POTION_MAX])
+        
+        print(f"Prise de potion qui rapportera {gain_pdv} pdv")
+        #Comportement selon si l'utilisateur va atteindre sa vie max ou non
+        if (avatar[INDEX_PDV] + gain_pdv) > PDV_MAX:
+            avatar[INDEX_PDV] = PDV_MAX
+        else:
+            avatar[INDEX_PDV] += gain_pdv
+        
+        print(f"Vie restante de {avatar[INDEX_NOM]} : {avatar[INDEX_PDV]}")
+    #Cas où l'avatar ne possède pas de potion
+    else:
+        monstre_peut_attaquer = False
+        print(f"{avatar[INDEX_NOM]} ne possède plus de potion !")
+
+#Fonction permettant de déterminer si le combat est terminé ou non
+def combat_continue():
+    if joueur[INDEX_PDV] and monstre[INDEX_PDV]:
+        return True
+    else:
+        return False
+
+#Création des avatars
+creation_avatar(joueur, "Chevalier", 50, [5, 10], 3)
+creation_avatar(monstre, "Troll", 50, [5, 15], 0)
+
+#Tant que les 2 combattants peuvent se tapper dessus le combat continue !
+while combat_continue():
+    
+    choix = input(f"Souhaitez-vous attaquer ({CHOIX_ATTAQUER}) ou utiliser une potion ({CHOIX_POTION}) ? ")
+    
+    #Action du joueur
+    if choix.isdigit():
+        if choix is CHOIX_ATTAQUER:
+            attaquer(joueur, monstre)
+        elif choix is CHOIX_POTION:
+            prendre_potion(joueur)
+        else:
+            print(f"Veuillez choisir entre attaquer ({CHOIX_ATTAQUER}) et utiliser une potion ({CHOIX_POTION})")
+    else:
+        print(f"Veuillez choisir entre attaquer ({CHOIX_ATTAQUER}) et utiliser une potion ({CHOIX_POTION})")
+    
+    #Faire attaquer le monstre si le monstre n'est pas KO et si précédemment le joueur a réussi à utiliser une potion
+    if monstre_peut_attaquer and monstre[INDEX_PDV]:
+        attaquer(monstre, joueur)
+
+#Synthèse du combat
+if joueur[INDEX_PDV]:
+    print(f"Victoire de {joueur[INDEX_NOM]} contre {monstre[INDEX_NOM]}")
+else:
+    print(f"{joueur[INDEX_NOM]} a succombé face à {monstre[INDEX_NOM]}")
+
